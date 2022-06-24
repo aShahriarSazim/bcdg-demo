@@ -2,7 +2,6 @@
 
 #editor directories
 ./idea
-._DS_Store
 
 # dependencies
 /node_modules
