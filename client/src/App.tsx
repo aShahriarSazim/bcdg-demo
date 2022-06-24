@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {FC} from 'react';
+import AppRoutes from './routes';
 
-const App = () => {
+const App: FC = () => {
     return (
         <div className="app">
-            <h1>Hello world</h1>
+            <AppRoutes />
         </div>
     )
 }
