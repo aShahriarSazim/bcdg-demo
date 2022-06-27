@@ -1,7 +1,7 @@
 import React, {FC, useState} from "react";
 import {Box, Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Stack, Text} from "@chakra-ui/react";
 import {SubmitHandler, useForm} from "react-hook-form";
-import LoginDataInterface from "../../Interfaces/LoginDataInterface";
+import {LoginDataInterface} from "../../Interfaces/AuthenticationInterfaces";
 
 const Login: FC = () => {
     const [showPassword, setShowPassword] = useState(false);

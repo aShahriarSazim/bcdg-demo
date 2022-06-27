@@ -3,8 +3,9 @@ import {useAppSelector, useAppDispatch} from "../../store/hooks";
 
 const Home: FC = () => {
 
-    const data = useAppSelector(state => state.auth);
-    console.log(data);
+    const auth = useAppSelector(state => state.auth);
+    const registerData = useAppSelector(state => state.registerData);
+    console.log(auth, registerData);
 
     return (
         <div className="home">
