@@ -15,7 +15,7 @@ export class AuthService {
         private config: ConfigService
     ) {}
 
-    async signInLocal(dto: signInDto) {
+    async signIn(dto: signInDto) {
         const user = await this.prisma.user.findUnique({
             where: {
                 email: dto.email,
@@ -25,9 +25,9 @@ export class AuthService {
         const isValid = await argon.verify(user.password, dto.password);
         if(!isValid)throw new ForbiddenException('Invalid Credentials');
 
-        return await this.signInJwt(user.id, user.email);
+        return await this.generateJWT(user.id, user.email);
     }
-    async signUpLocal(dto: signUpDto) {
+    async signUp(dto: signUpDto) {
         const hashedPassword = await argon.hash(dto.password);
         try {
             const user = await this.prisma.user.create({
@@ -40,7 +40,7 @@ export class AuthService {
                     password: hashedPassword,
                 }
             });
-            return await this.signInJwt(user.id, user.email);
+            return await this.generateJWT(user.id, user.email);
         }catch (e) {
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code === 'P2002') {
@@ -51,7 +51,7 @@ export class AuthService {
         }
     }
 
-    async signInJwt(userId: number, email: string) {
+    async generateJWT(userId: number, email: string) {
         const payload = {
             userId,
             email
