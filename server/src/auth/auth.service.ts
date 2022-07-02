@@ -42,12 +42,11 @@ export class AuthService {
             });
             return await this.generateJWT(user.id, user.email);
         }catch (e) {
-            if (e instanceof PrismaClientKnownRequestError) {
-                if (e.code === 'P2002') {
-                    throw new ForbiddenException('Email or Phone already taken');
-                }
+
+            if (e.code === 'P2002') {
+                throw new ForbiddenException(e.meta.target);
             }
-            throw e;
+            throw new ForbiddenException(e);
         }
     }
 
@@ -64,5 +63,24 @@ export class AuthService {
         return {
             access_token: token
         };
+    }
+
+    async getCurrentLoggedInUser(userId) {
+        try {
+            return await this.prisma.user.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    firstName: true,
+                    lastName: true,
+                    email: true,
+                    phone: true,
+                    address: true
+                }
+            });
+        }catch(e){
+            throw new ForbiddenException('Invalid Credentials');
+        }
     }
 }
