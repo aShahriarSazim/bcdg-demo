@@ -4,7 +4,7 @@ export interface UserInterface {
     email: string;
     address: string;
     phone: string;
-    token: string;
+    token?: string;
     isAuthenticated: boolean;
 }
 

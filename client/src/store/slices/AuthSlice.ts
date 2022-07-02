@@ -25,7 +25,6 @@ export const authSlice = createSlice({
             state.email = action.payload.email;
             state.address = action.payload.address;
             state.phone = action.payload.phone;
-            state.token = "DemoToken";
             state.isAuthenticated = true;
         },
         clearAuth: (state) => EmptyUser,
