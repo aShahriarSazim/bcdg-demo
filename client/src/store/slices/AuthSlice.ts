@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {UserInterface} from "../../Interfaces/AuthenticationInterfaces";
 
-// Create the initial state of the slice, where user is null by default
-// user is not authenticated by default
 const EmptyUser: UserInterface = {
     firstName: '',
     lastName: '',
