@@ -23,8 +23,6 @@ const CheckAuth: FC = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("access_token");
-
-        // If token exists, check if the token is valid.
         if(token){
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             checkUserAuthentication();
