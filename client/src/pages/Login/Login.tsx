@@ -1,7 +1,7 @@
 import React, {FC, useState} from "react";
 import {Box, Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Stack, Text} from "@chakra-ui/react";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {LoginDataInterface} from "../../Interfaces/AuthenticationInterfaces";
+import {LoginDataInterface} from "../../Interfaces/LoginDataInterface";
 import {useAppDispatch} from "../../store/hooks";
 import axios from '../../axios';
 import {useNavigate} from "react-router-dom";
@@ -12,8 +12,12 @@ const Login: FC = () => {
     const navigateTo = useNavigate();
     const dispatch = useAppDispatch();
 
+    // for password hide-show functionality
     const [showPassword, setShowPassword] = useState(false);
     const handleShowPassword = () => setShowPassword(!showPassword);
+
+    // for showing general unexpected error messages
+    const [generalErrorMessage, setGeneralErrorMessage] = useState({error: false, errorMessage: ""});
 
     const { register, handleSubmit, formState: { errors }, setError } = useForm<LoginDataInterface>();
 
@@ -34,7 +38,7 @@ const Login: FC = () => {
             if(e.response.data.statusCode === 403){
                 setError("email", {type: "unauthorized", message: e.response.data.message});
             }else{
-                setError("email", {type: "unexpectedError", message: "Something went wrong. Please try again later."});
+                setGeneralErrorMessage({error: true, errorMessage: "Something unexpected happened. Please Try again."});
             }
         }
     }
@@ -44,6 +48,9 @@ const Login: FC = () => {
                 <Text my="10px" textAlign="center" fontWeight="bold" fontSize="3em">Login Account</Text>
                 {errors.email &&
                     <Box my="20px"> <Text fontWeight="bold" color="red.500">{errors.email.message}</Text> </Box>
+                }
+                {generalErrorMessage.error &&
+                    <Box my="20px"> <Text fontWeight="bold" color="red.500">{generalErrorMessage.errorMessage}</Text> </Box>
                 }
                 <form onSubmit={handleSubmit(loginUser)}>
 
