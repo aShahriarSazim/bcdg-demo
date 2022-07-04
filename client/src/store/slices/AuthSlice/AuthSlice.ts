@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {UserInterface} from "../../Interfaces/UserInterface";
+import {UserInterface} from "./Interfaces/UserInterface";
 
 const EmptyUser: UserInterface = {
     firstName: '',

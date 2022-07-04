@@ -1,11 +1,11 @@
 import React, {FC, useState} from "react";
 import {Box, Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Stack, Text} from "@chakra-ui/react";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {LoginDataInterface} from "../../Interfaces/LoginDataInterface";
+import {LoginDataInterface} from "./Interfaces/LoginDataInterface";
 import {useAppDispatch} from "../../store/hooks";
 import axios from '../../axios';
 import {useNavigate} from "react-router-dom";
-import {setAuth} from "../../store/slices/AuthSlice";
+import {setAuth} from "../../store/slices/AuthSlice/AuthSlice";
 
 const Login: FC = () => {
 

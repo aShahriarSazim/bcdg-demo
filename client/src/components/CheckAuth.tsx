@@ -1,7 +1,7 @@
 import {FC, useEffect} from "react";
 import {useAppDispatch} from "../store/hooks";
 import axios from "../axios";
-import {clearAuth, setAuth} from "../store/slices/AuthSlice";
+import {clearAuth, setAuth} from "../store/slices/AuthSlice/AuthSlice";
 
 const CheckAuth: FC = () => {
     const dispatch = useAppDispatch();
