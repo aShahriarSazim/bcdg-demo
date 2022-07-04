@@ -25,18 +25,10 @@ const Login: FC = () => {
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            try {
-                const user = await axios.get('/auth/current-loggedin-user');
-                localStorage.setItem('access_token', token);
-                dispatch(setAuth(user.data));
-                navigateTo("/");
-            }catch(e: any){
-                if(e.response.data.statusCode === 401){
-                    setError("email", {type: "unauthorized", message: e.response.data.message});
-                }else{
-                    setError("email", {type: "unexpectedError", message: "Something went wrong. Please try again later."});
-                }
-            }
+            const user = await axios.get('/auth/current-loggedin-user');
+            localStorage.setItem('access_token', token);
+            dispatch(setAuth(user.data));
+            navigateTo("/");
 
         }catch(e: any){
             if(e.response.data.statusCode === 403){
