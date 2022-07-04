@@ -42,7 +42,6 @@ export class AuthService {
             });
             return await this.generateJWT(user.id, user.email);
         }catch (e) {
-
             if (e instanceof PrismaClientKnownRequestError) {
                 if (e.code === 'P2002') {
                     throw new ForbiddenException('Email or Phone already taken');
