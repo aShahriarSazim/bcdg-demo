@@ -17,23 +17,3 @@ export interface RegisterDataInterface {
     password?: string;
     confirmPassword?: string;
 }
-
-
-export interface RegisterNameInterface{
-    firstName: string;
-    lastName: string;
-}
-export interface RegisterContactsInterface{
-    email: string;
-    phone: string;
-    address: string;
-}
-export interface RegisterPasswordInterface{
-    password: string;
-    confirmPassword: string;
-}
-
-export interface LoginDataInterface {
-    email: string;
-    password: string;
-}
