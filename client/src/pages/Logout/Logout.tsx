@@ -7,11 +7,10 @@ const Logout: FC = () => {
     const dispatch = useAppDispatch();
     const navigateTo = useNavigate();
     useEffect(() => {
-        // removing the access token and the redux auth state from the store.
+
         localStorage.removeItem("access_token");
         dispatch(clearAuth());
 
-        //redirecting to the home page
         navigateTo("/");
     }, []);
     return (
