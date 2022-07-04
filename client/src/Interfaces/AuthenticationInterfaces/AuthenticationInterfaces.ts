@@ -8,6 +8,11 @@ export interface UserInterface {
     isAuthenticated: boolean;
 }
 
+export interface LoginDataInterface {
+    email: string;
+    password: string;
+}
+
 export interface RegisterDataInterface {
     firstName?: string;
     lastName?: string;
