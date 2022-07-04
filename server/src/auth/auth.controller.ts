@@ -9,12 +9,12 @@ export class AuthController {
     constructor(private AuthService: AuthService) {}
 
     @Post('/signin')
-    async signInLocal(@Body() dto: signInDto) {
+    async signIn(@Body() dto: signInDto) {
         return this.AuthService.signIn(dto);
     }
 
-    @Post ('/signup')
-    async signUpLocal(@Body() dto: signUpDto) {
+    @Post('/signup')
+    async signUp(@Body() dto: signUpDto) {
         return this.AuthService.signUp(dto);
     }
 
