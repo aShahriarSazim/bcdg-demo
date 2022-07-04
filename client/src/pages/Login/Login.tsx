@@ -1,20 +1,57 @@
 import React, {FC, useState} from "react";
 import {Box, Button, FormControl, FormLabel, Input, InputGroup, InputRightElement, Stack, Text} from "@chakra-ui/react";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {LoginDataInterface} from "../../Interfaces/AuthenticationInterfaces";
+import {LoginDataInterface} from "./Interfaces/LoginDataInterface";
+import {useAppDispatch} from "../../store/hooks";
+import axios from '../../axios';
+import {useNavigate} from "react-router-dom";
+import {setAuth} from "../../store/slices/AuthSlice/AuthSlice";
 
 const Login: FC = () => {
+
+    const navigateTo = useNavigate();
+    const dispatch = useAppDispatch();
+
+    // for password hide-show functionality
     const [showPassword, setShowPassword] = useState(false);
     const handleShowPassword = () => setShowPassword(!showPassword);
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<LoginDataInterface>();
-    const loginUser: SubmitHandler<LoginDataInterface> = (data) => {
-        console.log(data);
+    // for showing general unexpected error messages
+    const [generalErrorMessage, setGeneralErrorMessage] = useState({error: false, errorMessage: ""});
+
+    const { register, handleSubmit, formState: { errors }, setError } = useForm<LoginDataInterface>();
+
+
+    const loginUser: SubmitHandler<LoginDataInterface> = async (data: LoginDataInterface) => {
+        try{
+            const response = await axios.post('/auth/signin', data);
+            const token = response.data.access_token;
+
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+            const user = await axios.get('/auth/current-loggedin-user');
+            localStorage.setItem('access_token', token);
+            dispatch(setAuth(user.data));
+            navigateTo("/");
+
+        }catch(e: any){
+            if(e.response.data.statusCode === 403){
+                setError("email", {type: "unauthorized", message: e.response.data.message});
+            }else{
+                setGeneralErrorMessage({error: true, errorMessage: "Something unexpected happened. Please Try again."});
+            }
+        }
     }
     return (
         <div className="login">
             <Box rounded="md" boxShadow="sm" p ="20px" w = "50%" mx="auto" >
                 <Text my="10px" textAlign="center" fontWeight="bold" fontSize="3em">Login Account</Text>
+                {errors.email &&
+                    <Box my="20px"> <Text fontWeight="bold" color="red.500">{errors.email.message}</Text> </Box>
+                }
+                {generalErrorMessage.error &&
+                    <Box my="20px"> <Text fontWeight="bold" color="red.500">{generalErrorMessage.errorMessage}</Text> </Box>
+                }
                 <form onSubmit={handleSubmit(loginUser)}>
 
                     <FormControl my="10px" isRequired>
