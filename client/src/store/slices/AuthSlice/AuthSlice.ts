@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {UserInterface} from "../../Interfaces/AuthenticationInterfaces";
+import {UserInterface} from "./Interfaces/UserInterface";
 
-// Create the initial state of the slice, where user is null by default
-// user is not authenticated by default
 const EmptyUser: UserInterface = {
     firstName: '',
     lastName: '',
@@ -25,7 +23,6 @@ export const authSlice = createSlice({
             state.email = action.payload.email;
             state.address = action.payload.address;
             state.phone = action.payload.phone;
-            state.token = "DemoToken";
             state.isAuthenticated = true;
         },
         clearAuth: (state) => EmptyUser,
