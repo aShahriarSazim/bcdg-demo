@@ -27,34 +27,23 @@ const Register: FC = () => {
         if(data.password !== data.confirmPassword){
             setError("confirmPassword", {type: "notMatch", message: "Password and Confirm Password must match"});
         }else{
-            // initial data is validated
             try {
                 const response = await axios.post("/auth/signup", data);
                 const token = response.data.access_token;
-                console.log(token);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                try {
-                    const user = await axios.get('/auth/current-loggedin-user');
-                    localStorage.setItem('access_token', token);
-                    dispatch(setAuth(user.data));
-                    navigateTo("/");
-                }catch(e: any){
-                    if(e.response.data.statusCode === 401){
-                        setGeneralErrorMessage({error: true, errorMessage: e.response.data.message});
-                    }else{
-                        setGeneralErrorMessage({error: true, errorMessage: "Something went wrong. Please try again later."});
-                    }
-                }
+
+                const user = await axios.get('/auth/current-loggedin-user');
+                localStorage.setItem('access_token', token);
+                dispatch(setAuth(user.data));
+                navigateTo("/");
 
             }catch(e: any){
                 if(e.response.data.statusCode === 403){
                     const errorMessages = e.response.data.message;
                     if(errorMessages.includes("email")){
-                        // email already exists
                         setError("email", {type: "exists", message: "Email already exists"});
                     }
                     if(errorMessages.includes("phone")){
-                        // phone already exists
                         setError("phone", {type: "exists", message: "Phone already exists"});
                     }
                 }else{
