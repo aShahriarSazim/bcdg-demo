@@ -13,13 +13,12 @@ const Navbar: FC = () => {
                 </Text>
             </div>
             <Box  className="navbarLinks" display="flex" columnGap="20px" >
-                {auth.isAuthenticated &&
+                {auth.isAuthenticated ?
                     <>
                         <Text><Link to="/my-products">My Products</Link></Text>
                         <Text><Link to="/logout">Logout</Link></Text>
                     </>
-                }
-                {!auth.isAuthenticated &&
+                    :
                     <>
                         <Text><Link to="/login">Login</Link></Text>
                         <Text><Link to="/register">Register</Link></Text>
