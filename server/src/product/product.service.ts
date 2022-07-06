@@ -16,7 +16,7 @@ export class ProductService {
                 user: {
                     select: {
                         id: true,
-                        email: true
+                        email: true,
                     }
                 },
                 categories: {
@@ -24,11 +24,35 @@ export class ProductService {
                         category: {
                             select: {
                                 id: true,
-                                name: true
+                                name: true,
                             }
                         }
                     }
-                }
+                },
+                purchaseHistory: {
+                    select: {
+                        id: true,
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                            }
+                        },
+                    }
+                },
+                rentHistories: {
+                    select: {
+                        id: true,
+                        from: true,
+                        to: true,
+                        user: {
+                            select: {
+                                id: true,
+                                email: true
+                            }
+                        }
+                    }
+                },
             }
         });
     }
@@ -115,7 +139,7 @@ export class ProductService {
                     user: {
                         select: {
                             id: true,
-                            email: true
+                            email: true,
                         }
                     },
                     categories: {
@@ -123,11 +147,35 @@ export class ProductService {
                             category: {
                                 select: {
                                     id: true,
-                                    name: true
+                                    name: true,
                                 }
                             }
                         }
-                    }
+                    },
+                    purchaseHistory: {
+                        select: {
+                            id: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                }
+                            },
+                        }
+                    },
+                    rentHistories: {
+                        select: {
+                            id: true,
+                            from: true,
+                            to: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    email: true
+                                }
+                            }
+                        }
+                    },
                 }
             });
 
@@ -178,7 +226,7 @@ export class ProductService {
                         user: {
                             select: {
                                 id: true,
-                                email: true
+                                email: true,
                             }
                         },
                         categories: {
@@ -186,11 +234,35 @@ export class ProductService {
                                 category: {
                                     select: {
                                         id: true,
-                                        name: true
+                                        name: true,
                                     }
                                 }
                             }
-                        }
+                        },
+                        purchaseHistory: {
+                            select: {
+                                id: true,
+                                user: {
+                                    select: {
+                                        id: true,
+                                        email: true,
+                                    }
+                                },
+                            }
+                        },
+                        rentHistories: {
+                            select: {
+                                id: true,
+                                from: true,
+                                to: true,
+                                user: {
+                                    select: {
+                                        id: true,
+                                        email: true
+                                    }
+                                }
+                            }
+                        },
                     }
                 });
 
