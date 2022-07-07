@@ -13,9 +13,12 @@ const Navbar: FC = () => {
                 </Text>
             </div>
             <Box  className="navbarLinks" display="flex" columnGap="20px" >
+
+                <Text><Link to="/products">All Products</Link></Text>
+
                 {auth.isAuthenticated ?
                     <>
-                        <Text><Link to="/my-products">My Products</Link></Text>
+                        <Text><Link to="/products/my">My Products</Link></Text>
                         <Text><Link to="/logout">Logout</Link></Text>
                     </>
                     :
