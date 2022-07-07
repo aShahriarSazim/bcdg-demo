@@ -30,7 +30,7 @@ const MyProducts: FC = () => {
                 </Box>
                 <Box my="20px">
                     {allProducts.data.map((product: ProductInterface, index) => {
-                        if (product.user.email === auth.email) {
+                        if (product.user.email === auth.user.email) {
                             return (
                                 <Box key={index} p="20px" mx="auto" width="750px">
                                     <ProductCard {...product} />

@@ -1,9 +1,9 @@
 import {FC, useEffect} from "react";
-import ProductInterface from "../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 import {Box, Text} from "@chakra-ui/react";
 import ProductCard from "./components/ProductCard";
 import {useAppDispatch, useAppSelector} from "../../store/hooks";
 import {getAllProducts} from "../../store/slices/ProductSlice/AllProducts";
+import ProductInterface from "../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 
 const Products: FC = () => {
 

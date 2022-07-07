@@ -1,4 +1,5 @@
-import {FC, useEffect } from "react";
+import {FC, useEffect} from "react";
+
 import {useNavigate, Link, useParams} from "react-router-dom";
 import {
     Box,
@@ -13,7 +14,9 @@ import {
 } from "@chakra-ui/react";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import axios from "../../../axios";
+
 import {getProductById} from "../../../store/slices/ProductSlice/ProductById";
+
 
 // @ts-ignore
 const ViewProduct: FC = () => {
@@ -48,7 +51,7 @@ const ViewProduct: FC = () => {
         }
         return (
             <Box my={10} mx={20}>
-                {auth.isAuthenticated && product && auth.email === product.data.user.email && (
+                {auth.isAuthenticated && product && auth.user.email === product.data.user.email && (
                     <Text textAlign={`right`}>
                         <Link to={`/products/${product.data.id}/edit`}>
                             <Button colorScheme="blue" mr={4}>Edit</Button>

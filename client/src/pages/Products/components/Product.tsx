@@ -1,5 +1,5 @@
 import {DeleteIcon} from "@chakra-ui/icons";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import ProductInterface from "../../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 import {FC} from "react";
 
@@ -16,12 +16,12 @@ import {
 } from '@chakra-ui/react'
 import axios from "../../../axios";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {removeSingleProductFromAllProducts} from "../../../store/slices/ProductSlice/AllProducts";
+import {removeProduct} from "../../../store/slices/ProductSlice";
 
-const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
-
-    const auth = useAppSelector(state => state.auth);
+const Product: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
     const dispatch = useAppDispatch();
+    const navigateTo = useNavigate();
+    const auth = useAppSelector(state => state.auth);
 
     const categories = product.categories.map(category => {
         return category.category.name;
@@ -30,15 +30,16 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const deleteProduct = async () => {
-        const deletedProduct  = await axios.post(`/products/delete/${product.id}`);
-        dispatch(removeSingleProductFromAllProducts(product.id));
+        const deletedProduct = await axios.post(`/products/delete/${product.id}`);
+        dispatch(removeProduct(deletedProduct.data.id));
         onClose();
+        navigateTo("/products/my");
     }
     return (
 
         <Box border="2px" borderColor="gray.200" p="20px" position="relative">
 
-            {auth.isAuthenticated && auth.user.email === product.user.email && (
+            {auth.isAuthenticated && auth.email === product.user.email && (
                 <>
                     <DeleteIcon cursor="pointer" position="absolute" right="3" top="3" zIndex={2} onClick={onOpen} />
                     <Modal isOpen={isOpen} onClose={onClose}>
@@ -76,4 +77,4 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
     )
 }
 
-export default ProductCard;
+export default Product;

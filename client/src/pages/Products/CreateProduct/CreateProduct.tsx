@@ -7,7 +7,6 @@ import {
     Select
 } from "chakra-react-select";
 import axios from "../../../axios";
-import {useAppDispatch} from "../../../store/hooks";
 import {useNavigate} from "react-router-dom";
 
 interface categoryOptions{

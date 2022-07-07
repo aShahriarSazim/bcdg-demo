@@ -11,6 +11,7 @@ import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {useNavigate, useParams} from "react-router-dom";
 import {getProductById} from "../../../store/slices/ProductSlice/ProductById";
 
+
 interface categoryOptions{
     value: number;
     label: string;
@@ -26,6 +27,7 @@ const EditProduct: FC = () => {
     const [inputCategories, setInputCategories] = useState<number[]>([]);
 
     const product = useAppSelector(state => state.product);
+
     // This is temporary for now. I will have to create an api endpoint in the server to grab the catagories.
     const categories: categoryOptions[] = [
         {label: "FPS Games", value: 1},
@@ -63,7 +65,7 @@ const EditProduct: FC = () => {
             navigateTo("/");
         }
         if(product.data){
-            if(product.data.user.email !== auth.email){
+            if(product.data.user.email !== auth.user.email){
                 navigateTo('/products/my');
             }
             setValue("title", product.data.title);
