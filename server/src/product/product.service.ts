@@ -56,6 +56,15 @@ export class ProductService {
             }
         });
     }
+    async getAllCategories() {
+        return await this.prisma.category.findMany({
+            select: {
+                id: true,
+                name: true,
+            }
+        });
+    }
+
     async getProductById(id: number){
         try{
             return await this.prisma.product.findUnique({
@@ -296,8 +305,264 @@ export class ProductService {
                 });
             }
         }catch(e){
-            console.log(e);
             throw new ForbiddenException('Product not found');
+        }
+    }
+
+    async incrementProductViews(userId: number, id: number){
+        try {
+            const product = await this.prisma.product.findUniqueOrThrow({
+                where: {
+                    id: id
+                }
+            });
+            const currentViews = product.views;
+            return await this.prisma.product.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    views: currentViews + 1
+                }
+            });
+
+        }catch(e){
+            throw new ForbiddenException("Product not found");
+        }
+    }
+
+    async buyProduct(res, userId: number, id: number){
+        try{
+            const product = await this.prisma.product.findUniqueOrThrow({
+                where: {
+                    id: id
+                },
+                include: {
+                    purchaseHistory: {
+                        select: {
+                            user: {
+                                select: {
+                                    id: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            if(product.userId === userId){
+                return res.status(HttpStatus.FORBIDDEN).json({
+                    status: HttpStatus.FORBIDDEN,
+                    error: "You can't buy your own product"
+                });
+            }
+            else if(product.purchaseHistory){
+                return res.status(HttpStatus.FORBIDDEN).json({
+                    status: HttpStatus.FORBIDDEN,
+                    error: "The product is already sold"
+                });
+            }else{
+                const newPurchaseHistory = await this.prisma.purchaseHistory.create({
+                    data: {
+                        userId: userId,
+                        productId: product.id
+                    }
+                });
+                const updatedProduct =  await this.prisma.product.findUnique({
+                    where: {
+                        id: id
+                    },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                            }
+                        },
+                        categories: {
+                            select: {
+                                category: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                    }
+                                }
+                            }
+                        },
+                        purchaseHistory: {
+                            select: {
+                                id: true,
+                                user: {
+                                    select: {
+                                        id: true,
+                                        email: true,
+                                    }
+                                },
+                            }
+                        },
+                        rentHistories: {
+                            select: {
+                                id: true,
+                                from: true,
+                                to: true,
+                                user: {
+                                    select: {
+                                        id: true,
+                                        email: true
+                                    }
+                                }
+                            }
+                        },
+                    }
+                })
+                return res.status(HttpStatus.OK).json(
+                    updatedProduct
+                );
+            }
+
+        }catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Product not found"
+            });
+        }
+    }
+    async getRentHistories(res, id: number){
+        try {
+            const product = await this.prisma.product.findUniqueOrThrow({
+                where: {
+                    id: id
+                },
+                include: {
+                    rentHistories: {
+                        select: {
+                            from: true,
+                            to: true,
+                            id: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    email: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            return res.status(HttpStatus.OK).json(product.rentHistories);
+        }
+        catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Product not found"
+            });
+        }
+    }
+
+    async rentProduct(res, userId: number, id: number, from: string, to: string){
+        try{
+            const product = await this.prisma.product.findUniqueOrThrow({
+                where: {
+                    id: id
+                },
+                include : {
+                    rentHistories: {
+                        select: {
+                            from: true,
+                            to: true,
+                        }
+                    }
+                }
+            });
+            if(product.userId === userId){
+                return res.status(HttpStatus.FORBIDDEN).json({
+                    status: HttpStatus.FORBIDDEN,
+                    error: "You can't rent your own product"
+                });
+            }
+
+            const fromDate = Date.parse(String(new Date(from)));
+            const toDate = Date.parse(String(new Date(to)));
+            if(fromDate > toDate){
+                return res.status(HttpStatus.FORBIDDEN).json({
+                    status: HttpStatus.FORBIDDEN,
+                    error: "Invalid dates"
+                });
+            }
+            for (let i = 0; i < product.rentHistories.length; i++) {
+                const rentHistory = product.rentHistories[i];
+                const curFrom = Date.parse(String(rentHistory.from));
+                const curTo = Date.parse(String(rentHistory.to));
+                if((curFrom <= fromDate && curTo >= toDate) || (curFrom >= fromDate && curFrom <= toDate) || (curTo >= fromDate && curTo <= toDate)|| fromDate === curTo || toDate === curFrom){
+                    return res.status(HttpStatus.FORBIDDEN).json({
+                        status: HttpStatus.FORBIDDEN,
+                        error: "The product is already rented at this interval"
+                    });
+                }
+            }
+            const newRentHistory = await this.prisma.rentHistory.create({
+                data: {
+                    from: new Date(from),
+                    to: new Date(to),
+                    userId: userId,
+                    productId: product.id
+                }
+            });
+            const updatedProduct =  await this.prisma.product.findUnique({
+                where: {
+                    id: id
+                },
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            email: true,
+                        }
+                    },
+                    categories: {
+                        select: {
+                            category: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            }
+                        }
+                    },
+                    purchaseHistory: {
+                        select: {
+                            id: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    email: true,
+                                }
+                            },
+                        }
+                    },
+                    rentHistories: {
+                        select: {
+                            id: true,
+                            from: true,
+                            to: true,
+                            user: {
+                                select: {
+                                    id: true,
+                                    email: true
+                                }
+                            }
+                        }
+                    },
+                }
+            });
+            return res.status(HttpStatus.OK).json(
+                updatedProduct
+            );
+        }
+        catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Product not found"
+            });
         }
     }
 }
