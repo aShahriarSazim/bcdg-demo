@@ -470,6 +470,15 @@ export class ProductService {
                             from: true,
                             to: true,
                         }
+                    },
+                    purchaseHistory: {
+                        select: {
+                            user: {
+                                select: {
+                                    id: true,
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -477,6 +486,12 @@ export class ProductService {
                 return res.status(HttpStatus.FORBIDDEN).json({
                     status: HttpStatus.FORBIDDEN,
                     error: "You can't rent your own product"
+                });
+            }
+            else if(product.purchaseHistory){
+                return res.status(HttpStatus.FORBIDDEN).json({
+                    status: HttpStatus.FORBIDDEN,
+                    error: "The product is already sold"
                 });
             }
 

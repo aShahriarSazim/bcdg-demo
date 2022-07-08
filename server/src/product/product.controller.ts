@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, ParseIntPipe, Post, Req, Res, UseGuards} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, Res, UseGuards} from '@nestjs/common';
 import {ProductService} from "./product.service";
 import {productDto} from "./dto";
 import {AuthGuard} from "@nestjs/passport";
@@ -30,11 +30,10 @@ export class ProductController {
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Post('/delete/:id')
+    @Delete('/delete/:id')
     async deleteProduct(@Req() req, @Param('id', new ParseIntPipe()) id){
         return this.ProductService.deleteProduct(req.user.userId, id);
     }
-
 
     // additional functionalities
     @Get('/categories')
@@ -42,7 +41,6 @@ export class ProductController {
         return this.ProductService.getAllCategories();
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Post('/increment/views/:id')
     async incrementProductViews(@Req() req, @Param('id', new ParseIntPipe()) id){
         return this.ProductService.incrementProductViews(req.user.userId, id);
@@ -52,6 +50,7 @@ export class ProductController {
     async buyProduct(@Res() res, @Req() req, @Param('id', new ParseIntPipe()) id){
         return this.ProductService.buyProduct(res, req.user.userId, id);
     }
+
     @Get('/rent-histories/:id')
     async getRentHistories(@Res() res, @Param('id', new ParseIntPipe()) id){
         return this.ProductService.getRentHistories(res, id);
