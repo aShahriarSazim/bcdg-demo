@@ -50,4 +50,3 @@ export const AllProductSlice = createSlice({
 export const { removeSingleProductFromAllProducts } = AllProductSlice.actions;
 
 export default AllProductSlice.reducer;
-

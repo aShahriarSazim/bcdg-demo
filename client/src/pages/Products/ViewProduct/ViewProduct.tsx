@@ -14,9 +14,7 @@ import {
 } from "@chakra-ui/react";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import axios from "../../../axios";
-
 import {getProductById} from "../../../store/slices/ProductSlice/ProductById";
-
 
 // @ts-ignore
 const ViewProduct: FC = () => {
@@ -44,10 +42,7 @@ const ViewProduct: FC = () => {
             return category.category.name;
         }).join(', ');
         const deleteProduct = async () => {
-
             await axios.post(`/products/delete/${id}`);
-
-            navigateTo("/products/my");
         }
         return (
             <Box my={10} mx={20}>

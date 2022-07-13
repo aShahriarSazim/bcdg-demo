@@ -74,4 +74,4 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
         </Box>
     )
 }
-export default ProductCard;
+ export default ProductCard;
