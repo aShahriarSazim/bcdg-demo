@@ -17,7 +17,6 @@ interface categoryOptions{
 
 const CreateProduct: FC = () => {
 
-    const dispatch = useAppDispatch();
     const navigateTo = useNavigate();
 
     const [inputCategories, setInputCategories] = useState<number[]>([]);
@@ -43,7 +42,6 @@ const CreateProduct: FC = () => {
                 rent: parseFloat(String(data.rent)),
                 rentPaymentPeriod: data.rentPaymentPeriod,
             };
-            // console.log(newProduct);
             const response = await axios.post("/products/create", newProduct);
             navigateTo('/products/my');
         }

@@ -1,4 +1,4 @@
-import {FC, useEffect, useState} from "react";
+import {FC, useEffect} from "react";
 import {Box, Button, Text} from "@chakra-ui/react";
 import ProductInterface from "../../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 import ProductCard from "../components/ProductCard";
