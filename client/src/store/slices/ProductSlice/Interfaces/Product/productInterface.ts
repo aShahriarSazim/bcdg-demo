@@ -44,3 +44,9 @@ export interface allProductsInterface{
     error: any;
     data: ProductInterface[];
 }
+export interface singleProductInterface{
+    loading: boolean;
+    success: boolean;
+    error: boolean;
+    data?: ProductInterface;
+}
