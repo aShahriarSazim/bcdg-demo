@@ -15,12 +15,13 @@ import {
     ModalCloseButton, useDisclosure, Button,
 } from '@chakra-ui/react'
 import axios from "../../../axios";
-import {useAppSelector} from "../../../store/hooks";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import {getAllProducts, removeSingleProductFromAllProducts} from "../../../store/slices/ProductSlice/AllProducts";
 
-const Product: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
+const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
 
-    const navigateTo = useNavigate();
     const auth = useAppSelector(state => state.auth);
+    const dispatch = useAppDispatch();
 
     const categories = product.categories.map(category => {
         return category.category.name;
@@ -30,8 +31,8 @@ const Product: FC<ProductInterface> = (product: ProductInterface): JSX.Element =
     const { isOpen, onOpen, onClose } = useDisclosure();
     const deleteProduct = async () => {
         const deletedProduct  = await axios.post(`/products/delete/${product.id}`);
+        dispatch(removeSingleProductFromAllProducts(product.id));
         onClose();
-        navigateTo("/products/");
     }
     return (
 
@@ -75,4 +76,4 @@ const Product: FC<ProductInterface> = (product: ProductInterface): JSX.Element =
     )
 }
 
-export default Product;
+export default ProductCard;

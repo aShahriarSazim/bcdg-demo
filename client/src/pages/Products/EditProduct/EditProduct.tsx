@@ -9,7 +9,7 @@ import {
 import axios from "../../../axios";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {useNavigate, useParams} from "react-router-dom";
-import {updateProduct} from "../../../store/slices/ProductSlice";
+import {getProductById} from "../../../store/slices/ProductSlice/ProductById";
 
 interface categoryOptions{
     value: number;
@@ -25,8 +25,7 @@ const EditProduct: FC = () => {
 
     const [inputCategories, setInputCategories] = useState<number[]>([]);
 
-    const product = useAppSelector(state => state.products.find(product => product.id === parseInt(String(id))));
-
+    const product = useAppSelector(state => state.product);
     // This is temporary for now. I will have to create an api endpoint in the server to grab the catagories.
     const categories: categoryOptions[] = [
         {label: "FPS Games", value: 1},
@@ -48,8 +47,6 @@ const EditProduct: FC = () => {
                 rentPaymentPeriod: data.rentPaymentPeriod,
             };
             const response = await axios.post(`/products/update/${id}`, productToBeUpdated);
-            const updatedProduct = response.data;
-            dispatch(updateProduct(updatedProduct));
             navigateTo('/products/my');
         }
     };
@@ -61,24 +58,29 @@ const EditProduct: FC = () => {
         setInputCategories(temp);
     };
     useEffect(() => {
-        if(product){
-            if(product.user.email !== auth.email){
+        dispatch(getProductById({id: parseInt(String(id))}));
+        if(product.error){
+            navigateTo("/");
+        }
+        if(product.data){
+            if(product.data.user.email !== auth.email){
                 navigateTo('/products/my');
             }
-            setValue("title", product.title);
-            setValue("description", product.description);
-            setValue("price", product.price);
-            setValue("rent", product.rent);
-            setValue("rentPaymentPeriod", product.rentPaymentPeriod);
+            setValue("title", product.data.title);
+            setValue("description", product.data.description);
+            setValue("price", product.data.price);
+            setValue("rent", product.data.rent);
+            setValue("rentPaymentPeriod", product.data.rentPaymentPeriod);
 
             let temp: number[] = [];
-            product.categories.forEach(({category}) => {
+            product.data.categories.forEach(({category}) => {
                 temp.push(category.id);
             });
             setInputCategories(temp);
         }
     }, []);
-    if(product){
+    if(product.data){
+        const existingCategories = product.data.categories;
         return (
             <Box my={10} mx={20}>
                 <Text mb={10} fontWeight="bold" fontSize="30px" textAlign={`center`}>Edit Product</Text>
@@ -105,7 +107,7 @@ const EditProduct: FC = () => {
                                     value={value}
                                     onChange={categoryInputUpdated}
                                     options={categories}
-                                    defaultValue={product.categories.map(({category}) => {
+                                    defaultValue={existingCategories.map(({category}) => {
                                         return {value: category.id, label: category.name}
                                     })}
                                     placeholder="Select Categories"

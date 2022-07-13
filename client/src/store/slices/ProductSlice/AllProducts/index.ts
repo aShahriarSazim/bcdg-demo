@@ -1,1 +1,1 @@
-export * from './AllProductSlice';
+export * from './AllProducts';
