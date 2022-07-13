@@ -1,4 +1,5 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
+
 import { allProductsInterface } from '../Interfaces/Product';
 import axios from "../../../../axios";
 
@@ -49,3 +50,4 @@ export const AllProductSlice = createSlice({
 export const { removeSingleProductFromAllProducts } = AllProductSlice.actions;
 
 export default AllProductSlice.reducer;
+

@@ -1,5 +1,5 @@
 import {DeleteIcon} from "@chakra-ui/icons";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import ProductInterface from "../../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 import {FC} from "react";
 
@@ -37,7 +37,6 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
     return (
 
         <Box border="2px" borderColor="gray.200" p="20px" position="relative">
-
             {auth.isAuthenticated && auth.user.email === product.user.email && (
                 <>
                     <DeleteIcon cursor="pointer" position="absolute" right="3" top="3" zIndex={2} onClick={onOpen} />
@@ -75,5 +74,4 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
         </Box>
     )
 }
-
 export default ProductCard;
