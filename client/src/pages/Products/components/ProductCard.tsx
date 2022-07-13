@@ -1,5 +1,5 @@
 import {DeleteIcon} from "@chakra-ui/icons";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import ProductInterface from "../../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 import {FC} from "react";
 

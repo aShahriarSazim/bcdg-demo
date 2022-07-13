@@ -1,5 +1,4 @@
-import {FC, useEffect} from "react";
-
+import {FC, useEffect } from "react";
 import {useNavigate, Link, useParams} from "react-router-dom";
 import {
     Box,
