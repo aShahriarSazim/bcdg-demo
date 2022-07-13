@@ -7,7 +7,6 @@ import {
     Select
 } from "chakra-react-select";
 import axios from "../../../axios";
-import {addProduct} from "../../../store/slices/ProductSlice";
 import {useAppDispatch} from "../../../store/hooks";
 import {useNavigate} from "react-router-dom";
 
@@ -46,8 +45,6 @@ const CreateProduct: FC = () => {
             };
             // console.log(newProduct);
             const response = await axios.post("/products/create", newProduct);
-            const createdProduct = response.data;
-            dispatch(addProduct(createdProduct));
             navigateTo('/products/my');
         }
     };

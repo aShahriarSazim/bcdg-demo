@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { allProductsInterface } from '../Interfaces/Product';
 import axios from "../../../../axios";
 
@@ -9,7 +9,7 @@ const initialState : allProductsInterface  = {
     data: []
 };
 
-export const getProducts = createAsyncThunk("products/getProducts", async (arg, {rejectWithValue}) => {
+export const getAllProducts = createAsyncThunk("products/getProducts", async (arg, {rejectWithValue}) => {
     try {
         const {data} = await axios.get("/products");
         return data;
@@ -18,28 +18,34 @@ export const getProducts = createAsyncThunk("products/getProducts", async (arg, 
     }
 })
 
-export const productSlice = createSlice({
+export const AllProductSlice = createSlice({
     name: 'products',
     initialState,
     extraReducers: (builder) => {
-        builder.addCase(getProducts.pending, (state, action) => {
+        builder.addCase(getAllProducts.pending, (state, action) => {
             state.loading = true;
             state.success = false;
         });
-        builder.addCase(getProducts.fulfilled, (state, action) => {
+        builder.addCase(getAllProducts.fulfilled, (state, action) => {
             state.loading = false;
             state.success = true;
             state.data = action.payload;
         });
-        builder.addCase(getProducts.rejected, (state, action)=>{
+        builder.addCase(getAllProducts.rejected, (state, action)=>{
             state.loading = false;
             state.success = false;
             state.error = action.payload;
         })
     },
     reducers: {
-
+        removeSingleProductFromAllProducts: (state: allProductsInterface, action: PayloadAction<number>) => {
+            const newStateData = state.data.filter(product => product.id !== action.payload);
+            state.data.splice(0, state.data.length);
+            newStateData.forEach(product => state.data.push(product));
+        }
     }
 });
 
-export default productSlice.reducer;
+export const { removeSingleProductFromAllProducts } = AllProductSlice.actions;
+
+export default AllProductSlice.reducer;
