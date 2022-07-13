@@ -6,14 +6,12 @@ import Navbar from "./components/Navbar";
 import {BrowserRouter} from "react-router-dom";
 
 import CheckAuth from "./components/CheckAuth";
-import FetchAllProducts from "./components/FetchAllProducts";
 
 const App: FC = () => {
     return (
         <Provider store={store}>
             <BrowserRouter>
                 <CheckAuth />
-                <FetchAllProducts />
                 <Navbar />
                 <AppRoutes />
             </BrowserRouter>
