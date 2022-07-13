@@ -37,3 +37,10 @@ export default interface ProductInterface{
     },
     rentHistory ?: rentHistoryInterface[]
 }
+
+export interface allProductsInterface{
+    loading: boolean;
+    success: boolean;
+    error: any;
+    data: ProductInterface[];
+}
