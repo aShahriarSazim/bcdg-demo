@@ -39,7 +39,7 @@ model Product{
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
 
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
 
     categories CategoryProduct[]
@@ -58,10 +58,10 @@ model Category{
 }
 
 model CategoryProduct{
-    product Product @relation(fields: [productId], references: [id])
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
     productId Int
 
-    category Category @relation(fields: [categoryId], references: [id])
+    category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
     categoryId Int
 
     createdAt DateTime @default(now())
@@ -76,10 +76,10 @@ model PurchaseHistory{
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
 
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
 
-    product Product @relation(fields: [productId], references: [id])
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
     productId Int @unique
 }
 model RentHistory{
@@ -89,9 +89,9 @@ model RentHistory{
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
 
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId Int
 
-    product Product @relation(fields: [productId], references: [id])
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
     productId Int
 }
