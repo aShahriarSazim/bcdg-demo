@@ -562,4 +562,121 @@ export class ProductService {
             });
         }
     }
+
+    async getAllProductsByUserId(res, currentUserId: number, userId: number){
+        if(currentUserId !== userId){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "You are not allowed to view this endpoint"
+            });
+        }
+        try{
+            const products = await this.prisma.product.findMany({
+                where: {
+                    userId: userId
+                }
+            });
+            return res.status(HttpStatus.OK).json(products);
+        }catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Products not found"
+            });
+        }
+    }
+    async getSoldProductsByUserId(res, currentUserId: number, userId: number){
+        if(currentUserId !== userId){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "You are not allowed to view this endpoint"
+            });
+        }
+        try{
+            // @ts-ignore
+            const products = await this.prisma.product.findMany({
+                where: {
+                    userId: userId,
+                    isSold: true,
+                }
+            });
+            return res.status(HttpStatus.OK).json(products);
+        }catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Products not found"
+            });
+        }
+    }
+    async getBoughtProductsByUserId(res, currentUserId: number, userId: number){
+        if(currentUserId !== userId){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "You are not allowed to view this endpoint"
+            });
+        }
+        try{
+            const products = await this.prisma.product.findMany({
+                where: {
+                    purchaseHistory: {
+                        userId: userId
+                    },
+                }
+            });
+            return res.status(HttpStatus.OK).json(products);
+        }catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Products not found"
+            });
+        }
+    }
+    async getRentedProductsByUserId(res, currentUserId: number, userId: number){
+        if(currentUserId !== userId){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "You are not allowed to view this endpoint"
+            });
+        }
+        try{
+            const products = await this.prisma.product.findMany({
+                where: {
+                    rentHistories: {
+                        some: {
+                            userId: userId
+                        }
+                    },
+                }
+            });
+            return res.status(HttpStatus.OK).json(products);
+        }catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Products not found"
+            });
+        }
+    }
+    async getLentProductsByUserId(res, currentUserId: number, userId: number){
+        if(currentUserId !== userId){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "You are not allowed to view this endpoint"
+            });
+        }
+        try{
+            const products = await this.prisma.product.findMany({
+                where: {
+                    userId: userId,
+                    rentHistories: {
+                        some: {}
+                    },
+                }
+            });
+            return res.status(HttpStatus.OK).json(products);
+        }catch(e){
+            return res.status(HttpStatus.FORBIDDEN).json({
+                status: HttpStatus.FORBIDDEN,
+                error: "Products not found"
+            });
+        }
+    }
 }

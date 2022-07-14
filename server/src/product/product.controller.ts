@@ -16,6 +16,34 @@ export class ProductController {
     async getProductById(@Param('id', new ParseIntPipe()) id){
         return this.ProductService.getProductById(id);
     }
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/user/:userId')
+    async getAllProductsByUserId(@Res() res, @Req() req, @Param('userId', new ParseIntPipe()) userId){
+        return this.ProductService.getAllProductsByUserId(res, req.user.userId, userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/user/:userId/sold')
+    async getSoldProductsByUserId(@Res() res, @Req() req, @Param('userId', new ParseIntPipe()) userId){
+        return this.ProductService.getSoldProductsByUserId(res, req.user.userId, userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/user/:userId/bought')
+    async getBoughtProductsByUserId(@Res() res, @Req() req, @Param('userId', new ParseIntPipe()) userId){
+        return this.ProductService.getBoughtProductsByUserId(res, req.user.userId, userId);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/user/:userId/rented')
+    async getRentedProductsByUserId(@Res() res, @Req() req, @Param('userId', new ParseIntPipe()) userId){
+        return this.ProductService.getRentedProductsByUserId(res, req.user.userId, userId);
+    }
+    @UseGuards(AuthGuard('jwt'))
+    @Get('/user/:userId/lent')
+    async getLentProductsByUserId(@Res() res, @Req() req, @Param('userId', new ParseIntPipe()) userId){
+        return this.ProductService.getLentProductsByUserId(res, req.user.userId, userId);
+    }
 
     @UseGuards(AuthGuard('jwt'))
     @Post('/create')
