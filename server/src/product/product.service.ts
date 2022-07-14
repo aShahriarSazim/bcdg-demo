@@ -337,17 +337,6 @@ export class ProductService {
                 where: {
                     id: id
                 },
-                include: {
-                    purchaseHistory: {
-                        select: {
-                            user: {
-                                select: {
-                                    id: true,
-                                }
-                            }
-                        }
-                    }
-                }
             });
             if(product.userId === userId){
                 return res.status(HttpStatus.FORBIDDEN).json({
@@ -355,7 +344,8 @@ export class ProductService {
                     error: "You can't buy your own product"
                 });
             }
-            else if(product.purchaseHistory){
+            // @ts-ignore
+            else if(product.isSold === true){
                 return res.status(HttpStatus.FORBIDDEN).json({
                     status: HttpStatus.FORBIDDEN,
                     error: "The product is already sold"
@@ -471,15 +461,6 @@ export class ProductService {
                             to: true,
                         }
                     },
-                    purchaseHistory: {
-                        select: {
-                            user: {
-                                select: {
-                                    id: true,
-                                }
-                            }
-                        }
-                    }
                 }
             });
             if(product.userId === userId){
@@ -488,7 +469,8 @@ export class ProductService {
                     error: "You can't rent your own product"
                 });
             }
-            else if(product.purchaseHistory){
+            // @ts-ignore
+            else if(product.isSold === true){
                 return res.status(HttpStatus.FORBIDDEN).json({
                     status: HttpStatus.FORBIDDEN,
                     error: "The product is already sold"
