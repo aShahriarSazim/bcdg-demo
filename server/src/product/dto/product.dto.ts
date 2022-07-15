@@ -31,5 +31,8 @@ export class productDto {
     @IsBoolean()
     status?: boolean;
 
+    @IsBoolean()
+    isSold?: boolean;
+
     categories: number[];
 }
