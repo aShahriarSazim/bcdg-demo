@@ -345,7 +345,7 @@ export class ProductService {
                 });
             }
             // @ts-ignore
-            else if(product.isSold === true){
+            else if(product.isSold){
                 return res.status(HttpStatus.FORBIDDEN).json({
                     status: HttpStatus.FORBIDDEN,
                     error: "The product is already sold"
@@ -470,7 +470,7 @@ export class ProductService {
                 });
             }
             // @ts-ignore
-            else if(product.isSold === true){
+            else if(product.isSold){
                 return res.status(HttpStatus.FORBIDDEN).json({
                     status: HttpStatus.FORBIDDEN,
                     error: "The product is already sold"
