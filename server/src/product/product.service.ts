@@ -410,8 +410,8 @@ export class ProductService {
             }
 
         }catch(e){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
+            return res.status(HttpStatus.NOT_FOUND).json({
+                status: HttpStatus.NOT_FOUND,
                 error: "Product not found"
             });
         }
@@ -441,8 +441,8 @@ export class ProductService {
             return res.status(HttpStatus.OK).json(product.rentHistories);
         }
         catch(e){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
+            return res.status(HttpStatus.NOT_FOUND).json({
+                status: HttpStatus.NOT_FOUND,
                 error: "Product not found"
             });
         }
@@ -556,8 +556,8 @@ export class ProductService {
             );
         }
         catch(e){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
+            return res.status(HttpStatus.NOT_FOUND).json({
+                status: HttpStatus.NOT_FOUND,
                 error: "Product not found"
             });
         }
