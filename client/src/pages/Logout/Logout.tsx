@@ -1,6 +1,6 @@
 import {FC, useEffect} from "react";
 import {useAppDispatch} from "../../store/hooks";
-import {clearAuth} from "../../store/slices/AuthSlice/AuthSlice";
+import {clearAuth} from "../../store/slices/AuthSlice";
 import {useNavigate} from "react-router-dom";
 
 const Logout: FC = () => {
