@@ -71,6 +71,7 @@ export class AuthService {
                     id: userId
                 },
                 select: {
+                    id: true,
                     firstName: true,
                     lastName: true,
                     email: true,

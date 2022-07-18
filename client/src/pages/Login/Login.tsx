@@ -5,7 +5,7 @@ import {LoginDataInterface} from "./Interfaces/LoginDataInterface";
 import {useAppDispatch} from "../../store/hooks";
 import axios from '../../axios';
 import {useNavigate} from "react-router-dom";
-import {setAuth} from "../../store/slices/AuthSlice/AuthSlice";
+import {getAuth} from "../../store/slices/AuthSlice";
 
 const Login: FC = () => {
 
@@ -29,9 +29,8 @@ const Login: FC = () => {
 
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            const user = await axios.get('/auth/current-loggedin-user');
             localStorage.setItem('access_token', token);
-            dispatch(setAuth(user.data));
+            dispatch(getAuth());
             navigateTo("/");
 
         }catch(e: any){
