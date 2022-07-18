@@ -6,6 +6,8 @@ interface categoryInterface{
 }
 interface rentHistoryInterface{
     id: number;
+    from: Date;
+    to: Date;
     user: {
         id: number;
         name: string;
@@ -21,6 +23,7 @@ export default interface ProductInterface{
     rentPaymentPeriod: number;
     views: 0;
     status: boolean;
+    isSold: boolean;
     createdAt: string;
     updatedAt: string;
     user: {
@@ -35,7 +38,7 @@ export default interface ProductInterface{
             email: string;
         }
     },
-    rentHistory ?: rentHistoryInterface[]
+    rentHistories : rentHistoryInterface[]
 }
 
 export interface allProductsInterface{
