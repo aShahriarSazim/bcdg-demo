@@ -1,12 +1,21 @@
-import {FC} from "react";
+import {FC, useEffect} from "react";
 import {Box, Tabs, TabList, TabPanels, Tab, TabPanel} from "@chakra-ui/react";
 import UserProducts from "./components/UserProducts";
 import UserBoughtProducts from "./components/UserBoughtProducts";
 import UserSoldProducts from "./components/UserSoldProducts";
 import UserRentProducts from "./components/UserRentProducts";
 import UserLentProducts from "./components/UserLentProducts";
+import {useAppSelector} from "../../../store/hooks";
+import {useNavigate} from "react-router-dom";
 
 const MyProducts: FC = () => {
+    const auth = useAppSelector(state => state.auth);
+    const navigateTo = useNavigate();
+    useEffect(() => {
+        if(!auth.isAuthenticated){
+            navigateTo('/');
+        }
+    }, []);
     return (
         <Box mt={5}>
             <Tabs variant={'enclosed'} isLazy={true}>

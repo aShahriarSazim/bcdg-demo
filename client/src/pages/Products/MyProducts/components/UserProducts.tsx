@@ -14,8 +14,7 @@ const UserProducts: FC = () => {
     const userProducts = useAppSelector(state => state.userProducts);
 
     useEffect(() => {
-        dispatch(getUserProducts({userId: 1}));
-        console.log('mounted');
+        dispatch(getUserProducts({userId: auth.user.id}));
     }, []);
     if(userProducts.loading){
         return (
