@@ -7,7 +7,6 @@ const EmptyUser: UserInterface = {
     success: false,
     error: null,
     isAuthenticated: false,
-
     user: {
         id: 0,
         firstName: '',
@@ -32,16 +31,20 @@ export const getAuth = createAsyncThunk('auth/getAuth', async (arg, {rejectWithV
             rejectWithValue(e);
         }
     }else{
-        return EmptyUser;
+        return rejectWithValue(EmptyUser.user);
     }
-
 });
 
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        clearAuth: (state) => EmptyUser,
+        clearAuth: (state) => {
+            state.loading = false;
+            state.success = false;
+            state.isAuthenticated = false;
+            state.error = true;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(getAuth.pending, (state, action) => {
@@ -49,15 +52,16 @@ export const authSlice = createSlice({
             state.success = false;
         });
         builder.addCase(getAuth.fulfilled, (state, action) => {
-            state.loading = false;
-            state.success = true;
-            state.isAuthenticated = true;
             state.user = action.payload;
+            state.isAuthenticated = true;
+            state.success = true;
+            state.loading = false;
         });
         builder.addCase(getAuth.rejected, (state, action) => {
             state.loading = false;
             state.success = false;
-            state.error = action.payload;
+            state.isAuthenticated = false;
+            state.error = true;
         });
     }
 });
