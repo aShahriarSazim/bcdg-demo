@@ -26,6 +26,8 @@ const EditProduct: FC = () => {
     const [inputCategories, setInputCategories] = useState<number[]>([]);
 
     const product = useAppSelector(state => state.product);
+
+    // This is temporary for now. I will have to create an api endpoint in the server to grab the catagories.
     const categories: categoryOptions[] = [
         {label: "FPS Games", value: 1},
         {label: "Open World", value: 2},

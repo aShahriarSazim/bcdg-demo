@@ -46,6 +46,7 @@ const ViewProduct: FC = () => {
         return (
             <Box my={10} mx={20}>
                 {auth.isAuthenticated && product && auth.user.email === product.data.user.email && (
+
                     <Text textAlign={`right`}>
                         <Link to={`/products/${product.data.id}/edit`}>
                             <Button colorScheme="blue" mr={4}>Edit</Button>

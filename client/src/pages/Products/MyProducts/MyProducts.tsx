@@ -1,5 +1,5 @@
 import {FC} from "react";
-import {Tabs, TabList, TabPanels, Tab, TabPanel, Box} from "@chakra-ui/react";
+import {Box, Tabs, TabList, TabPanels, Tab, TabPanel} from "@chakra-ui/react";
 import UserProducts from "./components/UserProducts";
 import UserBoughtProducts from "./components/UserBoughtProducts";
 import UserSoldProducts from "./components/UserSoldProducts";
