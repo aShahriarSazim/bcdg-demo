@@ -17,6 +17,11 @@ import {
 import axios from "../../../axios";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {removeSingleProductFromAllProducts} from "../../../store/slices/ProductSlice/AllProducts";
+import {removeSingleProductFromUserProducts} from "../../../store/slices/ProductSlice/UserProducts";
+import {removeSingleProductFromUserSoldProducts} from "../../../store/slices/ProductSlice/UserSoldProducts";
+import {removeSingleProductFromUserBoughtProducts} from "../../../store/slices/ProductSlice/UserBoughtProducts";
+import {removeSingleProductFromUserLentProducts} from "../../../store/slices/ProductSlice/UserLentProducts";
+import {removeSingleProductFromUserRentProducts} from "../../../store/slices/ProductSlice/UserRentProducts";
 
 const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
 
@@ -32,13 +37,15 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
     const deleteProduct = async () => {
         const deletedProduct  = await axios.delete(`/products/delete/${product.id}`);
         dispatch(removeSingleProductFromAllProducts(product.id));
-        dispatch(removeSingleProductFromAllProducts(product.id));
+        dispatch(removeSingleProductFromUserProducts(product.id));
+        dispatch(removeSingleProductFromUserBoughtProducts(product.id));
+        dispatch(removeSingleProductFromUserSoldProducts(product.id));
+        dispatch(removeSingleProductFromUserLentProducts(product.id));
+        dispatch(removeSingleProductFromUserRentProducts(product.id));
         onClose();
     }
     return (
-
         <Box border="2px" borderColor="gray.200" p="20px" position="relative">
-
             {auth.isAuthenticated && auth.user.email === product.user.email && (
                 <>
                     <DeleteIcon cursor="pointer" position="absolute" right="3" top="3" zIndex={2} onClick={onOpen} />
