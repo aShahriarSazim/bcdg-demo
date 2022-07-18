@@ -5,13 +5,10 @@ import store from "./store/index";
 import Navbar from "./components/Navbar";
 import {BrowserRouter} from "react-router-dom";
 
-import CheckAuth from "./components/CheckAuth";
-
 const App: FC = () => {
     return (
         <Provider store={store}>
             <BrowserRouter>
-                <CheckAuth />
                 <Navbar />
                 <AppRoutes />
             </BrowserRouter>
