@@ -62,6 +62,7 @@ export const authSlice = createSlice({
             state.success = false;
             state.isAuthenticated = false;
             state.error = true;
+            state.user = EmptyUser.user;
         });
     }
 });
