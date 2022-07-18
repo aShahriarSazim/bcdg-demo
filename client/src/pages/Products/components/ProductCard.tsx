@@ -78,6 +78,9 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
                     <Text mt="20px">
                         {product.description}
                     </Text>
+                    <Text textAlign={'right'} fontSize={'13px'} color={'gray.500'} mt={5}>
+                        {product.views} views
+                    </Text>
                 </Link>
             </Box>
         </Box>

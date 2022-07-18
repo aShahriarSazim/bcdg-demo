@@ -10,6 +10,7 @@ import axios from "../../../axios";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {useNavigate, useParams} from "react-router-dom";
 import {getProductById} from "../../../store/slices/ProductSlice/ProductById";
+import {getProductCategories} from "../../../store/slices/ProductSlice/ProductCategories";
 
 interface categoryOptions{
     value: number;
@@ -27,12 +28,7 @@ const EditProduct: FC = () => {
 
     const product = useAppSelector(state => state.product);
 
-    // This is temporary for now. I will have to create an api endpoint in the server to grab the catagories.
-    const categories: categoryOptions[] = [
-        {label: "FPS Games", value: 1},
-        {label: "Open World", value: 2},
-        {label: "Multiplayer", value: 3}
-    ];
+    const productCategories = useAppSelector(state => state.productCategories);
 
     const { control, register, handleSubmit, formState: { errors }, setError, setValue } = useForm<any>();
     const editProduct : SubmitHandler<ProductInterface> = async (data: ProductInterface) => {
@@ -80,7 +76,19 @@ const EditProduct: FC = () => {
             setInputCategories(temp);
         }
     }, []);
-    if(product.data){
+    useEffect(()=> {
+        dispatch(getProductCategories());
+    }, []);
+    if(productCategories.loading && !productCategories.success || !product.data){
+        return <div>Loading...</div>;
+    }
+    else if(product.data){
+        const categories: categoryOptions[] = productCategories.data.map(category => {
+            return {
+                value: category.id,
+                label: category.name
+            }
+        });
         const existingCategories = product.data.categories;
         return (
             <Box my={10} mx={20}>
