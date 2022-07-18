@@ -41,7 +41,8 @@ const ViewProduct: FC = () => {
             return category.category.name;
         }).join(', ');
         const deleteProduct = async () => {
-            await axios.post(`/products/delete/${id}`);
+            await axios.delete(`/products/delete/${id}`);
+            navigateTo('/products/my');
         }
         return (
             <Box my={10} mx={20}>

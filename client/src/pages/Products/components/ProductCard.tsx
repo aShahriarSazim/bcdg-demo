@@ -30,7 +30,8 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const deleteProduct = async () => {
-        const deletedProduct  = await axios.post(`/products/delete/${product.id}`);
+        const deletedProduct  = await axios.delete(`/products/delete/${product.id}`);
+        dispatch(removeSingleProductFromAllProducts(product.id));
         dispatch(removeSingleProductFromAllProducts(product.id));
         onClose();
     }
