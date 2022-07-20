@@ -6,12 +6,11 @@ import ProductInterface from "../../../store/slices/ProductSlice/Interfaces/Prod
 import {
     Select
 } from "chakra-react-select";
-import axios from "../../../axios";
-
 
 import {useNavigate} from "react-router-dom";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {getProductCategories} from "../../../store/slices/ProductSlice/ProductCategories";
+import {productCreate} from "../../../store/slices/ProductSlice/ProductActions";
 
 interface categoryOptions{
     value: number;
@@ -23,8 +22,11 @@ const CreateProduct: FC = () => {
     const navigateTo = useNavigate();
     const dispatch = useAppDispatch();
     const [inputCategories, setInputCategories] = useState<number[]>([]);
+    const [isProductCreated, setIsProductCreated] = useState(false);
+    const [generalError, setGeneralError] = useState({error: true, message: ''});
 
     const productCategories = useAppSelector(state => state.productCategories);
+    const productActions = useAppSelector(state => state.productActions);
 
     const { control, register, handleSubmit, formState: { errors }, setError } = useForm<any>();
     const createProduct : SubmitHandler<ProductInterface> = async (data: ProductInterface) => {
@@ -40,20 +42,28 @@ const CreateProduct: FC = () => {
                 rent: parseFloat(String(data.rent)),
                 rentPaymentPeriod: data.rentPaymentPeriod,
             };
-            const response = await axios.post("/products/create", newProduct);
-            navigateTo('/products/my');
+            dispatch(productCreate({product: newProduct}));
+            setIsProductCreated(true);
         }
     };
     const categoryInputUpdated = (e: any) => {
-        let temp: number[] = [];
+        let temporaryCategories: number[] = [];
         e.forEach((category: categoryOptions) => {
-            temp.push(category.value);
+            temporaryCategories.push(category.value);
         });
-        setInputCategories(temp);
+        setInputCategories(temporaryCategories);
     };
     useEffect(() => {
         dispatch(getProductCategories());
     }, []);
+    useEffect(()=>{
+        if(productActions.productCreate.success && isProductCreated){
+            navigateTo("/products/my");
+        }else if(productActions.productCreate.error){
+            setIsProductCreated(false);
+            setGeneralError({error: true, message: productActions.productCreate.error.message});
+        }
+    }, [productActions, isProductCreated]);
     if(productCategories.loading && !productCategories.success){
         return <div>Loading...</div>;
     }else {
@@ -66,6 +76,9 @@ const CreateProduct: FC = () => {
         return (
             <Box my={10} mx={20}>
                 <Text mb={10} fontWeight="bold" fontSize="30px" textAlign={`center`}>Create Product</Text>
+                {generalError.error &&
+                    <Text textAlign={'center'} color={'red'}>{generalError.message}</Text>
+                }
                 <form onSubmit={handleSubmit(createProduct)}>
                     <FormControl my="10px" isRequired>
                         <FormLabel htmlFor='title'>Title</FormLabel>
@@ -117,7 +130,7 @@ const CreateProduct: FC = () => {
                         </FormControl>
                     </Box>
                     <Text textAlign={'center'} mt={10}>
-                        <Button type="submit" colorScheme={'blue'}>Add Product</Button>
+                        <Button type="submit" colorScheme={'blue'}>Create Product</Button>
                     </Text>
                 </form>
             </Box>

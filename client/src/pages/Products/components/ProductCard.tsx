@@ -1,4 +1,3 @@
-import {DeleteIcon} from "@chakra-ui/icons";
 import {Link} from "react-router-dom";
 import ProductInterface from "../../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 import {FC} from "react";
@@ -6,70 +5,24 @@ import {FC} from "react";
 import {
     Box,
     Text,
-    Modal,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton, useDisclosure, Button,
 } from '@chakra-ui/react'
-import axios from "../../../axios";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {removeSingleProductFromAllProducts} from "../../../store/slices/ProductSlice/AllProducts";
-import {removeSingleProductFromUserProducts} from "../../../store/slices/ProductSlice/UserProducts";
-import {removeSingleProductFromUserSoldProducts} from "../../../store/slices/ProductSlice/UserSoldProducts";
-import {removeSingleProductFromUserBoughtProducts} from "../../../store/slices/ProductSlice/UserBoughtProducts";
-import {removeSingleProductFromUserLentProducts} from "../../../store/slices/ProductSlice/UserLentProducts";
-import {removeSingleProductFromUserRentProducts} from "../../../store/slices/ProductSlice/UserRentProducts";
+import {useAppSelector} from "../../../store/hooks";
+import DeleteProduct from "./DeleteProduct";
 
 const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
 
     const auth = useAppSelector(state => state.auth);
-    const dispatch = useAppDispatch();
-
     const categories = product.categories.map(category => {
         return category.category.name;
     }).join(", ");
 
-
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const deleteProduct = async () => {
-        const deletedProduct  = await axios.delete(`/products/delete/${product.id}`);
-        dispatch(removeSingleProductFromAllProducts(product.id));
-        dispatch(removeSingleProductFromUserProducts(product.id));
-        dispatch(removeSingleProductFromUserBoughtProducts(product.id));
-        dispatch(removeSingleProductFromUserSoldProducts(product.id));
-        dispatch(removeSingleProductFromUserLentProducts(product.id));
-        dispatch(removeSingleProductFromUserRentProducts(product.id));
-        onClose();
-    }
     return (
         <Box border="2px" borderColor="gray.200" p="20px" position="relative">
             {auth.isAuthenticated && auth.user.email === product.user.email && (
-                <>
-                    <DeleteIcon cursor="pointer" position="absolute" right="3" top="3" zIndex={2} onClick={onOpen} />
-                    <Modal isOpen={isOpen} onClose={onClose}>
-                        <ModalOverlay />
-                        <ModalContent>
-                            <ModalHeader>Delete Product?</ModalHeader>
-                            <ModalCloseButton />
-                            <ModalBody>
-                                If you delete the product, the product will be removed from the database and you will never get this product back
-                            </ModalBody>
-
-                            <ModalFooter>
-                                <Button colorScheme='red' mr={2} onClick={deleteProduct}>
-                                    Delete
-                                </Button>
-                                <Button colorScheme='blue' onClick={onClose}>
-                                    Cancel
-                                </Button>
-                            </ModalFooter>
-                        </ModalContent>
-                    </Modal>
-                </>)
-            }
+                <Box position={'absolute'} right={0} top={0} m={2}>
+                    <DeleteProduct id={product.id} afterDelete={'removeProductFromRedux'}/>
+                </Box>
+            )}
             <Box mt="5px">
                 <Link to={`/products/view/${product.id}`} >
                     <Text fontWeight="bold" fontSize="20px">{product.title}</Text>
@@ -83,6 +36,11 @@ const ProductCard: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
                     </Text>
                 </Link>
             </Box>
+            {product.isSold &&
+                <Text left={0} bottom={0} position={'absolute'} color={'white'} fontSize={'11px'} as={'span'} mt={5} bg={'teal'} p={1}>
+                    sold
+                </Text>
+            }
         </Box>
     )
 }

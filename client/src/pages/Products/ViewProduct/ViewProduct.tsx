@@ -3,29 +3,22 @@ import {useNavigate, Link, useParams} from "react-router-dom";
 import {
     Box,
     Button,
-    Modal,
-    ModalBody,
-    ModalCloseButton,
-    ModalContent, ModalFooter,
-    ModalHeader,
-    ModalOverlay,
-    Text, useDisclosure,
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
     Td,
-    TableCaption,
     TableContainer,
+    Text,
 } from "@chakra-ui/react";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import axios from "../../../axios";
 import {getProductById} from "../../../store/slices/ProductSlice/ProductById";
 
 import BuyProduct from "./components/BuyProduct";
 import RentProduct from "./components/RentProduct";
+import DeleteProduct from "../components/DeleteProduct";
+import {incrementProductView} from "../../../store/slices/ProductSlice/ProductActions";
 
 // @ts-ignore
 const ViewProduct: FC = () => {
@@ -36,10 +29,6 @@ const ViewProduct: FC = () => {
 
     const navigateTo = useNavigate();
 
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    const incrementProductView = async () => {
-        await axios.post(`/products/increment/views/${id}`);
-    }
     const dateFormat = (date: Date) => {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
         const curDate: Date = new Date(date);
@@ -54,7 +43,7 @@ const ViewProduct: FC = () => {
         if(product.error){
             navigateTo("/");
         }
-        incrementProductView();
+        dispatch(incrementProductView({id: parseInt(String(id))}));
     }, []);
     if(product.loading){
         return (
@@ -64,40 +53,21 @@ const ViewProduct: FC = () => {
         const categories = product.data.categories.map(category => {
             return category.category.name;
         }).join(', ');
-        const deleteProduct = async () => {
-            await axios.delete(`/products/delete/${id}`);
-            navigateTo('/products/my');
-        }
         return (
             <Box my={10} mx={20}>
                 {auth.isAuthenticated && product && auth.user.email === product.data.user.email &&
                     (
 
-                    <Text textAlign={`right`}>
-                        <Link to={`/products/${product.data.id}/edit`}>
-                            <Button colorScheme="blue" mr={4}>Edit</Button>
-                        </Link>
-                        <Button colorScheme="red" onClick={onOpen} >Delete</Button>
-                        <Modal isOpen={isOpen} onClose={onClose}>
-                            <ModalOverlay />
-                            <ModalContent>
-                                <ModalHeader>Delete Product?</ModalHeader>
-                                <ModalCloseButton />
-                                <ModalBody>
-                                    If you delete the product, the product will be removed from the database and you will never get this product back
-                                </ModalBody>
-
-                                <ModalFooter>
-                                    <Button colorScheme='red' mr={2} onClick={deleteProduct}>
-                                        Delete
-                                    </Button>
-                                    <Button colorScheme='blue' onClick={onClose}>
-                                        Cancel
-                                    </Button>
-                                </ModalFooter>
-                            </ModalContent>
-                        </Modal>
-                    </Text>
+                    <Box textAlign={`right`}>
+                        <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                            <Link to={`/products/${product.data.id}/edit`}>
+                                <Button colorScheme="blue" mr={4}>Edit</Button>
+                            </Link>
+                            <Box fontSize={'35px'} textAlign={'right'} >
+                                <DeleteProduct id={product.data.id} afterDelete={'redirectToMyProducts'} />
+                            </Box>
+                        </Box>
+                    </Box>
                 )}
                 {product &&
                     <>
@@ -132,7 +102,7 @@ const ViewProduct: FC = () => {
                                 </TableContainer>
                             </Box>
                         }
-                        {!auth.isAuthenticated &&
+                        {!auth.isAuthenticated && !product.data.isSold &&
                             <Text textAlign={'right'} mt={10}>Please Login to buy or rent this product</Text>
                         }
                         {auth.isAuthenticated && product.data.user.id !== auth.user.id && !product.data.isSold &&

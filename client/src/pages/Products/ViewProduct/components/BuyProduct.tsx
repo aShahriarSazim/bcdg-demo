@@ -1,4 +1,4 @@
-import {FC} from "react";
+import {FC, useEffect, useState} from "react";
 import ProductInterface from "../../../../store/slices/ProductSlice/Interfaces/Product/productInterface";
 import {Box, Button, useDisclosure,
     Modal,
@@ -9,17 +9,30 @@ import {Box, Button, useDisclosure,
     ModalBody,
     ModalCloseButton,
 } from "@chakra-ui/react";
-import axios from "../../../../axios";
 import {useNavigate} from "react-router-dom";
+import {useAppDispatch, useAppSelector} from "../../../../store/hooks";
+import { buyProduct } from "../../../../store/slices/ProductSlice/ProductActions";
 
 const BuyProduct: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
+    const dispatch = useAppDispatch();
+    const productActions = useAppSelector(state => state.productActions);
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [generalError, setGeneralError] = useState<{ error: boolean; message: string }  | null>(null);
+    const [productDeleteAction, setProductDeleteAction] = useState<boolean>(false);
     const navigateTo = useNavigate();
-    const buyProduct = async () => {
-        const boughtProduct = await axios.post(`/products/buy/${product.id}`);
-        onClose();
-        navigateTo('/products/my');
+    const buyProductAction = async () => {
+        dispatch(buyProduct(product));
+        setProductDeleteAction(true);
     }
+    useEffect(() => {
+        if(productActions.buyProduct.success && productDeleteAction) {
+            onClose();
+            navigateTo('/products/my');
+        }else if(productActions.buyProduct.error) {
+            setGeneralError({error: true, message: productActions.buyProduct.error.message});
+            setProductDeleteAction(false);
+        }
+    }, [productActions, productDeleteAction]);
     return (
         <div>
             <Modal isOpen={isOpen} onClose={onClose}>
@@ -29,10 +42,13 @@ const BuyProduct: FC<ProductInterface> = (product: ProductInterface): JSX.Elemen
                     <ModalCloseButton />
                     <ModalBody>
                         Do you want to buy this product?
+                        {generalError && generalError.error &&
+                            <Box my={5} color={'red'}>{generalError.message}</Box>
+                        }
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button colorScheme='purple' mr={3} onClick={buyProduct}>
+                        <Button colorScheme='purple' mr={3} onClick={buyProductAction}>
                             Buy
                         </Button>
                         <Button colorScheme='red' mr={3} onClick={onClose}>

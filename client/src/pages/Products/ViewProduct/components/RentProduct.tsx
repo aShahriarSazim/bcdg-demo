@@ -15,36 +15,49 @@ import {useNavigate} from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import './style/react-datepicker.css';
-import axios from "../../../../axios";
+import {useAppDispatch, useAppSelector} from "../../../../store/hooks";
+import {rentProduct} from "../../../../store/slices/ProductSlice/ProductActions";
 
 const RentProduct: FC<ProductInterface> = (product: ProductInterface): JSX.Element => {
+    const dispatch = useAppDispatch();
     const [disableRentButton, setDisableRentButton] = useState(true);
     const [existingRentIntervals, setExistingRentIntervals] = useState<{from: Date;to: Date}[] >([]);
     const [maxToDate, setMaxToDate] = useState<Date | null>(null);
-    const [disableFromDateButton, setDisableFromDateButton] = useState(false);
     const [disableToDateButton, setDisableToDateButton] = useState(true);
+
+    const [generalError, setGeneralError] = useState<{error: boolean;message: string}>({error: false, message: ''});
+    const [rentProductActionHit, setRentProductActionHit] = useState<boolean>(false);
+    const productActions = useAppSelector(state => state.productActions);
 
     const [startSelectedDate, setStartSelectedDate] = useState<Date | null>(null);
     const [endSelectedDate, setEndSelectedDate] = useState<Date | null>(null);
 
     const { isOpen, onOpen, onClose } = useDisclosure();
     const navigateTo = useNavigate();
-    const rentProduct = async () => {
-        const rentedProduct = await axios.post(`/products/rent/${product.id}`, {from: startSelectedDate, to: endSelectedDate});
-        onClose();
-        navigateTo('/products/my');
+    const rentProductAction = async () => {
+        dispatch(rentProduct({
+            id: product.id,
+            from: startSelectedDate,
+            to: endSelectedDate
+        }));
+        setRentProductActionHit(true);
     }
     const findEarliestRentIntervalGreaterThanDate = (date: Date) => {
-        setMaxToDate(null);
+        let newMaxToDate: Date | null = null;
         product.rentHistories.forEach(history => {
             if(date.getTime() < new Date(history.to).getTime()){
-                if(maxToDate === null || (maxToDate.getTime() > new Date(history.from).getTime())){
-                    const newMaxToDate = new Date(history.from);
-                    newMaxToDate.setDate(newMaxToDate.getDate()-1);
-                    setMaxToDate(newMaxToDate);
+                if(newMaxToDate === null || (newMaxToDate.getTime() > new Date(history.from).getTime())){
+                    newMaxToDate = new Date(history.from);
                 }
             }
         });
+        if(newMaxToDate){
+            const finalMaxToDate = new Date(newMaxToDate);
+            finalMaxToDate.setDate(finalMaxToDate.getDate() - 1);
+            setMaxToDate(finalMaxToDate);
+        }else{
+            setMaxToDate(null);
+        }
     }
     const checkDateAndSetStartDate = (date: Date) => {
         if(!date){
@@ -79,6 +92,15 @@ const RentProduct: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
             return {start: new Date(interval.from), end: new Date(interval.to)};
         });
     }, []);
+    useEffect(()=>{
+        if(productActions.rentProduct.success && rentProductActionHit){
+            onClose();
+            navigateTo('/products/my');
+        }else if(productActions.rentProduct.error){
+            setRentProductActionHit(false);
+            setGeneralError({error: true, message: productActions.rentProduct.error.message});
+        }
+    }, [rentProductActionHit, productActions]);
     return (
         <div>
             <Modal isOpen={isOpen} onClose={onClose}>
@@ -87,6 +109,9 @@ const RentProduct: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
                     <ModalHeader>Rent This product?</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
+                        {generalError.error &&
+                            <Text my={3} color={'red'}>{generalError.message}</Text>
+                        }
                         <Text fontWeight={'bold'}>From</Text>
                         <Box className={'from-date'}>
                             <DatePicker
@@ -106,7 +131,7 @@ const RentProduct: FC<ProductInterface> = (product: ProductInterface): JSX.Eleme
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button disabled={disableRentButton} colorScheme='purple' mr={3} onClick={rentProduct}>
+                        <Button disabled={disableRentButton} colorScheme='purple' mr={3} onClick={rentProductAction}>
                             Rent
                         </Button>
                         <Button colorScheme='red' mr={3} onClick={onClose}>

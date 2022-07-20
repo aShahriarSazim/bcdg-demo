@@ -6,11 +6,11 @@ import ProductInterface from "../../../store/slices/ProductSlice/Interfaces/Prod
 import {
     Select
 } from "chakra-react-select";
-import axios from "../../../axios";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {useNavigate, useParams} from "react-router-dom";
 import {getProductById} from "../../../store/slices/ProductSlice/ProductById";
 import {getProductCategories} from "../../../store/slices/ProductSlice/ProductCategories";
+import {updateProduct} from "../../../store/slices/ProductSlice/ProductActions";
 
 interface categoryOptions{
     value: number;
@@ -25,9 +25,10 @@ const EditProduct: FC = () => {
     const navigateTo = useNavigate();
 
     const [inputCategories, setInputCategories] = useState<number[]>([]);
+    const [isProductUpdated, setIsProductUpdated] = useState(false);
 
     const product = useAppSelector(state => state.product);
-
+    const productActions = useAppSelector(state => state.productActions);
     const productCategories = useAppSelector(state => state.productCategories);
 
     const { control, register, handleSubmit, formState: { errors }, setError, setValue } = useForm<any>();
@@ -43,8 +44,8 @@ const EditProduct: FC = () => {
                 rent: parseFloat(String(data.rent)),
                 rentPaymentPeriod: data.rentPaymentPeriod,
             };
-            const response = await axios.post(`/products/update/${id}`, productToBeUpdated);
-            navigateTo('/products/my');
+            dispatch(updateProduct({id: parseInt(String(id)), product: productToBeUpdated}));
+            setIsProductUpdated(true);
         }
     };
     const categoryInputUpdated = (e: any) => {
@@ -79,6 +80,13 @@ const EditProduct: FC = () => {
     useEffect(()=> {
         dispatch(getProductCategories());
     }, []);
+
+    useEffect(() => {
+        if(productActions.updateProduct.success && isProductUpdated){
+            navigateTo('/products/my');
+        }
+    }, [productActions, isProductUpdated]);
+
     if(productCategories.loading && !productCategories.success || !product.data){
         return <div>Loading...</div>;
     }
