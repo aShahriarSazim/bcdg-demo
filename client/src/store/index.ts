@@ -8,6 +8,7 @@ import UserLentProductSlice from "./slices/ProductSlice/UserLentProducts/UserLen
 import UserSoldProductSlice from "./slices/ProductSlice/UserSoldProducts/UserSoldProducts";
 import UserBoughtProductSlice from "./slices/ProductSlice/UserBoughtProducts/UserBoughtProducts";
 import ProductCategories from "./slices/ProductSlice/ProductCategories/ProductCategories";
+import ProductActionsSlice from "./slices/ProductSlice/ProductActions/ProductActionsSlice";
 
 export const store = configureStore({
     reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
         userBoughtProducts: UserBoughtProductSlice,
         productCategories: ProductCategories,
         product: ProductById,
+        productActions: ProductActionsSlice,
     },
 });
 
