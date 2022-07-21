@@ -1,4 +1,4 @@
-import {ForbiddenException, HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
 import {PrismaService} from "../prisma/prisma.service";
 import {productDto} from "./dto";
 
@@ -65,9 +65,9 @@ export class ProductService {
         });
     }
 
-    async getProductById(res, id: number){
+    async getProductById(id: number){
         try{
-            const product = await this.prisma.product.findUniqueOrThrow({
+            return await this.prisma.product.findUniqueOrThrow({
                 where: {
                     id: id
                 },
@@ -114,17 +114,15 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(product);
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product could not be created"
-            });
+            if(e.name==="NotFoundError"){
+                throw new NotFoundException("Product not found");
+            }
         }
     }
-    async createProduct(res, userId: number, dto: productDto){
+    async createProduct(userId: number, dto: productDto){
         try {
-            const product =  this.prisma.product.create({
+            return await  this.prisma.product.create({
                 data: {
                     userId: userId,
                     title: dto.title,
@@ -189,30 +187,24 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(product);
-
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product could not be created"
-            });
+            throw new NotFoundException("Product could not be created");
         }
     }
-    async updateProduct(res, userId: number, id: number, dto: productDto){
+    async updateProduct(userId: number, id: number, dto: productDto){
         try{
-            const product = await this.prisma.product.findUnique({
+            const product = await this.prisma.product.findUniqueOrThrow({
                 where: {
                     id: id
                 }
             });
             if(product.userId === userId){
-                const deletedCategoryRelations = await this.prisma.categoryProduct.deleteMany({
+                await this.prisma.categoryProduct.deleteMany({
                     where: {
                         productId: product.id
                     }
-                })
-
-                const updatedProduct =  await this.prisma.product.update({
+                });
+                return  await this.prisma.product.update({
                     where: {
                         id: id
                     },
@@ -277,55 +269,38 @@ export class ProductService {
                         },
                     }
                 });
-                return res.status(HttpStatus.OK).json(updatedProduct);
-
             }else{
-                return res.send(HttpStatus.BAD_REQUEST).json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "You are not authorized to update this product"
-                });
+                throw new BadRequestException("You are not allowed to update this product");
             }
         }catch(e){
-            return res.send(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product not found"
-            });
+            if(e.name === "NotFoundError"){
+                throw new NotFoundException("Product not found");
+            }
+            else throw new BadRequestException(e.message);
         }
     }
-    async deleteProduct(res, userId: number, id: number){
+    async deleteProduct(userId: number, id: number){
         try{
-            const product = await this.prisma.product.findUnique({
+            const product = await this.prisma.product.findUniqueOrThrow({
                 where: {
                     id: id
                 }
             });
             if(product.userId !== userId){
-                return res.send(HttpStatus.BAD_REQUEST).json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "You are not allowed to delete this product"
-                });
+                throw new BadRequestException("You are not allowed to delete this product");
             }
             else{
-                await this.prisma.categoryProduct.deleteMany({
-                    where: {
-                        productId: product.id
-                    }
-                });
-                const deletedProduct = await this.prisma.product.delete({
+                return await this.prisma.product.delete({
                     where: {
                         id: product.id
                     }
                 });
-                return res.status(HttpStatus.OK).json(deletedProduct);
             }
         }catch(e){
-            return res.send(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product not found"
-            });
+            throw new BadRequestException(e.message);
         }
     }
-    async incrementProductViews(res, id: number){
+    async incrementProductViews(id: number){
         try {
             const product = await this.prisma.product.findUniqueOrThrow({
                 where: {
@@ -333,7 +308,7 @@ export class ProductService {
                 }
             });
             const currentViews = product.views;
-            const updatedProduct = await this.prisma.product.update({
+            return await this.prisma.product.update({
                 where: {
                     id: id
                 },
@@ -341,16 +316,12 @@ export class ProductService {
                     views: currentViews + 1
                 }
             });
-            return res.status(HttpStatus.OK).json(updatedProduct);
         }catch(e){
-            return res.send(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product not found"
-            });
+            throw new NotFoundException(e.message);
         }
     }
 
-    async buyProduct(res, userId: number, id: number){
+    async buyProduct(userId: number, id: number){
         try{
             const product = await this.prisma.product.findUniqueOrThrow({
                 where: {
@@ -358,16 +329,10 @@ export class ProductService {
                 },
             });
             if(product.userId === userId){
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "You can't buy your own product"
-                });
+                throw new BadRequestException("You can not buy your own product");
             }
             else if(product.isSold){
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "The product is already sold"
-                });
+                throw new BadRequestException("This product is already sold");
             }else{
                 await this.prisma.product.update({
                     data: {
@@ -383,7 +348,7 @@ export class ProductService {
                         productId: product.id
                     }
                 });
-                const updatedProduct =  await this.prisma.product.findUnique({
+                return  await this.prisma.product.findUnique({
                     where: {
                         id: id
                     },
@@ -430,17 +395,16 @@ export class ProductService {
                         },
                     }
                 })
-                return res.status(HttpStatus.OK).json(updatedProduct);
             }
 
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product not found"
-            });
+            if(e.name==="NotFoundError"){
+                throw new NotFoundException("Product not found");
+            }
+            else throw new BadRequestException(e.message);
         }
     }
-    async getRentHistories(res, id: number){
+    async getRentHistories(id: number){
         try {
             const product = await this.prisma.product.findUniqueOrThrow({
                 where: {
@@ -462,17 +426,14 @@ export class ProductService {
                     }
                 }
             });
-            return res.status(HttpStatus.OK).json(product);
+            return product.rentHistories;
         }
         catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product not found"
-            });
+            throw new NotFoundException(e.message);
         }
     }
 
-    async rentProduct(res, userId: number, id: number, from: Date, to: Date){
+    async rentProduct(userId: number, id: number, from: Date, to: Date){
         try{
             const product = await this.prisma.product.findUniqueOrThrow({
                 where: {
@@ -488,35 +449,23 @@ export class ProductService {
                 }
             });
             if(product.userId === userId){
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "You can't rent your own product"
-                });
+                throw new BadRequestException("You can not rent your own product");
             }
             else if(product.isSold){
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "The product is already sold"
-                });
+                throw new BadRequestException("This product is already sold");
             }
 
             const fromDate = Date.parse(String(new Date(from)));
             const toDate = Date.parse(String(new Date(to)));
             if(fromDate > toDate){
-                return res.status(HttpStatus.BAD_REQUEST).json({
-                    status: HttpStatus.BAD_REQUEST,
-                    message: "Invalid dates"
-                });
+                throw new BadRequestException("Invalid dates");
             }
             for (let i = 0; i < product.rentHistories.length; i++) {
                 const rentHistory = product.rentHistories[i];
                 const curFrom = Date.parse(String(rentHistory.from));
                 const curTo = Date.parse(String(rentHistory.to));
                 if((curFrom <= fromDate && curTo >= toDate) || (curFrom >= fromDate && curFrom <= toDate) || (curTo >= fromDate && curTo <= toDate)|| fromDate === curTo || toDate === curFrom){
-                    return res.status(HttpStatus.BAD_REQUEST).json({
-                        status: HttpStatus.BAD_REQUEST,
-                        message: "The product is already rented at this interval"
-                    });
+                    throw new BadRequestException("This product is already rented in this period");
                 }
             }
             const newRentHistory = await this.prisma.rentHistory.create({
@@ -527,7 +476,7 @@ export class ProductService {
                     productId: product.id
                 }
             });
-            const updatedProduct =  await this.prisma.product.findUnique({
+            return  await this.prisma.product.findUnique({
                 where: {
                     id: id
                 },
@@ -574,27 +523,21 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(
-                updatedProduct
-            );
         }
         catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Product not found"
-            });
+            if(e.name==="NotFoundError"){
+                throw new NotFoundException("Product not found");
+            }
+            else throw new BadRequestException(e.message);
         }
     }
 
-    async getAllProductsByUserId(res, currentUserId: number, userId: number){
+    async getAllProductsByUserId(currentUserId: number, userId: number){
         if(currentUserId !== userId){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
-                message: "You are not allowed to view this endpoint"
-            });
+            throw new BadRequestException("You can not see other user's products");
         }
         try{
-            const products = await this.prisma.product.findMany({
+            return await this.prisma.product.findMany({
                 orderBy: {
                     id: 'desc'
                 },
@@ -644,23 +587,16 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(products);
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Products not found"
-            });
+            throw new NotFoundException(e.message);
         }
     }
-    async getSoldProductsByUserId(res, currentUserId: number, userId: number){
+    async getSoldProductsByUserId(currentUserId: number, userId: number){
         if(currentUserId !== userId){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
-                message: "You are not allowed to view this endpoint"
-            });
+            throw new BadRequestException("You are not allowed to see other people's sold products");
         }
         try{
-            const products = await this.prisma.product.findMany({
+            return await this.prisma.product.findMany({
                 orderBy: {
                     id: 'desc'
                 },
@@ -711,23 +647,16 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(products);
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Products not found"
-            });
+            throw new NotFoundException(e.message);
         }
     }
-    async getBoughtProductsByUserId(res, currentUserId: number, userId: number){
+    async getBoughtProductsByUserId(currentUserId: number, userId: number){
         if(currentUserId !== userId){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
-                message: "You are not allowed to view this endpoint"
-            });
+            throw new BadRequestException("You are not allowed to see other people's bought products");
         }
         try{
-            const products = await this.prisma.product.findMany({
+            return await this.prisma.product.findMany({
                 orderBy: {
                     id: 'desc'
                 },
@@ -780,23 +709,16 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(products);
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Products not found"
-            });
+            throw new NotFoundException(e.message);
         }
     }
-    async getRentedProductsByUserId(res, currentUserId: number, userId: number){
+    async getRentedProductsByUserId(currentUserId: number, userId: number){
         if(currentUserId !== userId){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
-                message: "You are not allowed to view this endpoint"
-            });
+           throw new BadRequestException("You are not allowed to see other people's rented products");
         }
         try{
-            const products = await this.prisma.product.findMany({
+            return await this.prisma.product.findMany({
                 orderBy: {
                     id: 'desc'
                 },
@@ -850,24 +772,17 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(products);
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Products not found"
-            });
+            throw new NotFoundException(e.message);
         }
     }
-    async getLentProductsByUserId(res, currentUserId: number, userId: number){
+    async getLentProductsByUserId(currentUserId: number, userId: number){
 
         if(currentUserId !== userId){
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                status: HttpStatus.BAD_REQUEST,
-                message: "You are not allowed to view this endpoint"
-            });
+            throw new BadRequestException("You are not allowed to see other people's lent products");
         }
         try{
-            const products = await this.prisma.product.findMany({
+            return await this.prisma.product.findMany({
                 orderBy: {
                     id: 'desc'
                 },
@@ -920,12 +835,8 @@ export class ProductService {
                     },
                 }
             });
-            return res.status(HttpStatus.OK).json(products);
         }catch(e){
-            return res.status(HttpStatus.NOT_FOUND).json({
-                status: HttpStatus.NOT_FOUND,
-                message: "Products not found"
-            });
+            throw new NotFoundException(e.message);
         }
     }
 }
