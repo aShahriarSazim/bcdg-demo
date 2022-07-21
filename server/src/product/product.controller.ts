@@ -12,9 +12,13 @@ export class ProductController {
     async getAllProducts(){
         return this.ProductService.getAllProducts();
     }
+    @Get('/categories')
+    async getAllCategories(){
+        return this.ProductService.getAllCategories();
+    }
     @Get('/:id')
-    async getProductById(@Param('id', new ParseIntPipe()) id){
-        return this.ProductService.getProductById(id);
+    async getProductById(@Res() res, @Param('id', new ParseIntPipe()) id){
+        return this.ProductService.getProductById(res, id);
     }
     @UseGuards(AuthGuard('jwt'))
     @Get('/user/:userId')
@@ -47,31 +51,28 @@ export class ProductController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('/create')
-    async createProduct(@Req() req, @Body() dto: productDto){
-        return this.ProductService.createProduct(req.user.userId, dto);
+    async createProduct(@Res() res, @Req() req, @Body() dto: productDto){
+        return this.ProductService.createProduct(res, req.user.userId, dto);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Post('/update/:id')
-    async updateProduct(@Req() req, @Param('id', new ParseIntPipe()) id, @Body() dto: productDto){
-        return this.ProductService.updateProduct(req.user.userId, id, dto);
+    async updateProduct(@Res() res, @Req() req, @Param('id', new ParseIntPipe()) id, @Body() dto: productDto){
+        return this.ProductService.updateProduct(res, req.user.userId, id, dto);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/delete/:id')
-    async deleteProduct(@Req() req, @Param('id', new ParseIntPipe()) id){
-        return this.ProductService.deleteProduct(req.user.userId, id);
+    async deleteProduct(@Res() res, @Req() req, @Param('id', new ParseIntPipe()) id){
+        return this.ProductService.deleteProduct(res, req.user.userId, id);
     }
 
     // additional functionalities
-    @Get('/categories')
-    async getAllCategories(){
-        return this.ProductService.getAllCategories();
-    }
+
 
     @Post('/increment/views/:id')
-    async incrementProductViews(@Req() req, @Param('id', new ParseIntPipe()) id){
-        return this.ProductService.incrementProductViews(req.user.userId, id);
+    async incrementProductViews(@Res() res, @Req() req, @Param('id', new ParseIntPipe()) id){
+        return this.ProductService.incrementProductViews(res, id);
     }
     @UseGuards(AuthGuard('jwt'))
     @Post('/buy/:id')
@@ -86,7 +87,7 @@ export class ProductController {
 
     @UseGuards(AuthGuard('jwt'))
     @Post('/rent/:id')
-    async rentProduct(@Res() res, @Req() req, @Param('id', new ParseIntPipe()) id, @Body() dto: {from: string;to: string}){
+    async rentProduct(@Res() res, @Req() req, @Param('id', new ParseIntPipe()) id, @Body() dto: {from: Date;to: Date}){
         return this.ProductService.rentProduct(res, req.user.userId, id, dto.from, dto.to);
     }
 }
