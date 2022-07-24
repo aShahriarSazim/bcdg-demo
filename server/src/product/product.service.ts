@@ -3,7 +3,6 @@ import {PrismaService} from "../prisma/prisma.service";
 import {productDto} from "./dto";
 import {ServiceReturnInterface} from "./Interfaces/ServiceReturnInterface";
 
-
 @Injectable()
 export class ProductService {
     constructor(
