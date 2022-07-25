@@ -1,0 +1,20 @@
+.from-date,
+.from-date > div.react-datepicker-wrapper,
+.from-date > div > div.react-datepicker__input-container,
+.from-date > div > div.react-datepicker__input-container input {
+    width: 100%;
+}
+.from-date{
+    border: 1px solid black;
+}
+
+.to-date,
+.to-date > div.react-datepicker-wrapper,
+.to-date > div > div.react-datepicker__input-container,
+.to-date > div > div.react-datepicker__input-container input {
+    width: 100%;
+}
+.to-date{
+    border: 1px solid black;
+}
+
