@@ -54,7 +54,7 @@ const Register: FC = () => {
 
     return (
         <div className="register-name">
-            <Text my="10px" textAlign="center" fontWeight="bold" fontSize="3em">Enter Your Name</Text>
+            <Text my="10px" textAlign="center" fontWeight="bold" fontSize="3em">Register A New Account</Text>
             <Box rounded="md" boxShadow="sm" p ="20px" w = "50%" mx="auto" >
                 {generalErrorMessage.error &&
                     <Text my="20px" color="red.500" textAlign="center" >{generalErrorMessage.errorMessage}</Text>
@@ -122,8 +122,8 @@ const Register: FC = () => {
                         }
 
                     </FormControl>
-                    <Box mt="20px" display="flex" justifyContent="flex-end">
-                        <Button type="submit" colorScheme='blue'>Next</Button>
+                    <Box mt="20px" display="flex" justifyContent="center">
+                        <Button type="submit" colorScheme='blue'>Register</Button>
                     </Box>
                 </form>
             </Box>
