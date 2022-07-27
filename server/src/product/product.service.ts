@@ -310,6 +310,7 @@ export class ProductService {
                 success: true,
                 data: updatedProduct
             }
+            return resp;
         }else{
             const error: ServiceReturnInterface = {
                 error: {
