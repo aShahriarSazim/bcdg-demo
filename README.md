@@ -18,4 +18,8 @@ The client directory is located at `./client` and the server directory is locate
 
 * Run `npm install`
 
+* Run `npx prisma generate`
+
+* Run `npx prisma migrate dev`
+
 * Run `npm run start:dev`
